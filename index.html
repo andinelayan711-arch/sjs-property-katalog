@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>SJS Property Group - Katalog Properti</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #0b3b4f, #1a5f7a);
+            color: white;
+            border-radius: 16px;
+        }
+
+        .logo {
+            max-width: 150px;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: #1a5f7a;
+            margin-bottom: 5px;
+        }
+
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: #1a5f7a;
+            box-shadow: 0 0 0 2px rgba(26,95,122,0.2);
+        }
+
+        .btn-reset {
+            background-color: #e2e8f0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-reset:hover {
+            background-color: #cbd5e1;
+        }
+
+        /* Stats */
+        .stats {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #1a5f7a;
+            font-weight: bold;
+        }
+
+        /* Grid Properti */
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        /* Card Properti */
+        .property-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #e2e8f0;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            color: #0b3b4f;
+        }
+
+        .card-location {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1a5f7a;
+            margin-bottom: 12px;
+        }
+
+        .card-details {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-tanah { background-color: #dcfce7; color: #166534; }
+        .badge-rumah { background-color: #dbeafe; color: #1e40af; }
+        .badge-ruko { background-color: #fff3e3; color: #b45309; }
+        .badge-toko { background-color: #fce7f3; color: #9d174d; }
+
+        .btn-detail {
+            display: inline-block;
+            background-color: #1a5f7a;
+            color: white;
+            text-align: center;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .btn-detail:hover {
+            background-color: #0b3b4f;
+        }
+
+        /* Modal Detail */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-content {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #0b3b4f, #1a5f7a);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: white;
+            z-index: 10;
+        }
+
+        .modal-img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .modal-info {
+            margin: 16px 0;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .modal-wa {
+            display: block;
+            background-color: #25D366;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            margin-top: 20px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 18px;
+            color: #1a5f7a;
+        }
+
+        .no-result {
+            text-align: center;
+            padding: 60px;
+            color: #64748b;
+        }
+
+        @media (max-width: 640px) {
+            .property-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-bar {
+                flex-direction: column;
+            }
+            .btn-reset {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://drive.google.com/uc?export=view&id=1-gv8MCO5A_HQHcTRxU7pXNRPEqVl1eUB" class="logo" alt="SJS Property Group" onerror="this.style.display='none'">
+        <h1>🏠 SJS Property Group</h1>
+        <p>Katalog Properti Pilihan | Lelang, Tanah, Rumah Baru & Bekas</p>
+    </div>
+
+    <div class="filter-bar">
+        <div class="filter-group">
+            <label>🔍 Cari (alamat/nama)</label>
+            <input type="text" id="searchInput" placeholder="Ketik alamat, nama...">
+        </div>
+        <div class="filter-group">
+            <label>🏷️ Jenis Unit</label>
+            <select id="jenisUnitFilter">
+                <option value="">Semua</option>
+                <option value="Tanah">Tanah</option>
+                <option value="Rumah">Rumah</option>
+                <option value="Ruko">Ruko</option>
+                <option value="Toko">Toko</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>💰 Harga Min (Rp)</label>
+            <input type="number" id="hargaMin" placeholder="0">
+        </div>
+        <div class="filter-group">
+            <label>💰 Harga Max (Rp)</label>
+            <input type="number" id="hargaMax" placeholder="No limit">
+        </div>
+        <div class="filter-group">
+            <label>&nbsp;</label>
+            <button class="btn-reset" id="resetFilter">Reset Filter</button>
+        </div>
+    </div>
+
+    <div class="stats" id="stats">Memuat data...</div>
+
+    <div class="property-grid" id="propertyGrid">
+        <div class="loading">⏳ Memuat data properti...</div>
+    </div>
+</div>
+
+<!-- Modal Detail -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+    // Google Sheets CSV URL (sheet AKTIF)
+    // Ganti gid dengan ID sheet AKTIF (biasanya 0)
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/1VzjLPm9BquUlYOpvkmlE1QjswXYCVJ5dYko2e0BTblU/export?format=csv&gid=0";
+
+    let allProperties = [];
+
+    // Helper: format ribuan
+    function formatRupiah(angka) {
+        if (!angka) return "0";
+        return "Rp " + Number(angka).toLocaleString('id-ID');
+    }
+
+    // Helper: bersihkan teks dari "Lihat Lokasi-"
+    function bersihkanAlamat(alamat) {
+        if (!alamat) return "";
+        return alamat.replace(/Lihat Lokasi-?/g, '').trim();
+    }
+
+    // Load CSV
+    async function loadData() {
+        try {
+            const response = await fetch(CSV_URL);
+            const csvText = await response.text();
+            const rows = csvText.split('\n').filter(row => row.trim());
+            const headers = rows[0].split(',').map(h => h.replace(/['"]/g, '').trim());
+            
+            const idxKode = headers.indexOf('kode_lelang');
+            const idxNama = headers.indexOf('nama_objek');
+            const idxAlamat = headers.indexOf('alamat_lengkap');
+            const idxHarga = headers.indexOf('limit_harga');
+            const idxJaminan = headers.indexOf('uang_jaminan');
+            const idxTglSetor = headers.indexOf('tanggal_batas_setor_jaminan');
+            const idxTglTutup = headers.indexOf('tanggal_batas_akhir_penawaran');
+            const idxStatus = headers.indexOf('status');
+            const idxJenisBarang = headers.indexOf('jenis_barang');
+            const idxJenisUnit = headers.indexOf('jenis_unit');
+            const idxFoto = headers.indexOf('foto_urls');
+            const idxWa = headers.indexOf('wa_agen');
+            const idxTawarkan = headers.indexOf('tawarkan_ke_investor');
+
+            allProperties = [];
+            for (let i = 1; i < rows.length; i++) {
+                const cols = parseCSVRow(rows[i]);
+                if (cols.length < 5) continue;
+                
+                const tawarkan = cols[idxTawarkan] ? cols[idxTawarkan].trim().toUpperCase() : '';
+                if (tawarkan !== 'YA') continue; // Hanya tampilkan yang di-YA-kan
+                
+                const harga = parseInt(cols[idxHarga]) || 0;
+                const fotoUrl = cols[idxFoto] ? cols[idxFoto].split(',')[0].trim() : '';
+                const alamat = bersihkanAlamat(cols[idxAlamat] || '');
+                const jenisUnit = cols[idxJenisUnit] ? cols[idxJenisUnit].trim() : (cols[idxJenisBarang] || '').includes('Tanah') ? 'Tanah' : 'Rumah';
+                
+                allProperties.push({
+                    kode: cols[idxKode] || '',
+                    nama: cols[idxNama] || '',
+                    alamat: alamat,
+                    harga: harga,
+                    jaminan: parseInt(cols[idxJaminan]) || 0,
+                    tglSetor: cols[idxTglSetor] || '',
+                    tglTutup: cols[idxTglTutup] || '',
+                    status: cols[idxStatus] || 'Aktif',
+                    jenisUnit: jenisUnit,
+                    foto: fotoUrl,
+                    wa: cols[idxWa] || ''
+                });
+            }
+            
+            renderProperties();
+        } catch (error) {
+            console.error(error);
+            document.getElementById('propertyGrid').innerHTML = '<div class="no-result">❌ Gagal memuat data. Coba refresh halaman.</div>';
+        }
+    }
+
+    // Parse CSV row (menangani kutipan)
+    function parseCSVRow(row) {
+        const result = [];
+        let inQuote = false;
+        let current = '';
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') {
+                inQuote = !inQuote;
+            } else if (char === ',' && !inQuote) {
+                result.push(current.trim());
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        result.push(current.trim());
+        return result;
+    }
+
+    // Render properti ke grid
+    function renderProperties() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const jenisUnitFilter = document.getElementById('jenisUnitFilter').value;
+        const hargaMin = parseInt(document.getElementById('hargaMin').value) || 0;
+        const hargaMax = parseInt(document.getElementById('hargaMax').value) || Infinity;
+        
+        let filtered = allProperties.filter(p => {
+            const matchSearch = p.nama.toLowerCase().includes(searchTerm) || p.alamat.toLowerCase().includes(searchTerm);
+            const matchJenis = jenisUnitFilter === '' || p.jenisUnit === jenisUnitFilter;
+            const matchHarga = p.harga >= hargaMin && p.harga <= hargaMax;
+            return matchSearch && matchJenis && matchHarga;
+        });
+        
+        const statsText = `Menampilkan ${filtered.length} dari ${allProperties.length} properti`;
+        document.getElementById('stats').innerHTML = `📊 ${statsText}`;
+        
+        const grid = document.getElementById('propertyGrid');
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="no-result">😞 Tidak ada properti yang sesuai dengan filter.</div>';
+            return;
+        }
+        
+        grid.innerHTML = '';
+        filtered.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'property-card';
+            card.onclick = () => showDetail(p);
+            
+            const badgeClass = `badge-${p.jenisUnit.toLowerCase()}`;
+            const fotoHtml = p.foto ? `<img class="card-img" src="${p.foto}" alt="Foto" onerror="this.src='https://placehold.co/600x400?text=No+Image'">` 
+                                   : `<div class="card-img" style="background:#e2e8f0; display:flex; align-items:center; justify-content:center;">📷 No Image</div>`;
+            
+            card.innerHTML = `
+                ${fotoHtml}
+                <div class="card-body">
+                    <div class="card-title">${p.nama.substring(0, 80)}${p.nama.length > 80 ? '...' : ''}</div>
+                    <div class="card-location">📍 ${p.alamat.substring(0, 70)}${p.alamat.length > 70 ? '...' : ''}</div>
+                    <div class="card-price">${formatRupiah(p.harga)}</div>
+                    <div class="card-details">
+                        <span class="badge ${badgeClass}">🏷️ ${p.jenisUnit}</span>
+                        <span>📅 ${p.tglTutup.substring(0, 16)}</span>
+                    </div>
+                    <div class="btn-detail">Lihat Detail</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+    
+    // Show modal detail
+    function showDetail(p) {
+        const modal = document.getElementById('detailModal');
+        const modalBody = document.getElementById('modalBody');
+        const fotoHtml = p.foto ? `<img class="modal-img" src="${p.foto}" alt="Foto" onerror="this.src='https://placehold.co/600x400?text=No+Image'">` 
+                               : `<div style="text-align:center; padding:40px; background:#e2e8f0;">📷 Tidak ada foto</div>`;
+        
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.alamat)}`;
+        const waUrl = p.wa ? `https://wa.me/${p.wa}?text=Halo%20SJS%2C%20saya%20tertarik%20dengan%20properti%20${encodeURIComponent(p.nama)}` : '#';
+        
+        modalBody.innerHTML = `
+            <div class="modal-header">
+                <h2>🏠 ${p.jenisUnit}</h2>
+            </div>
+            ${fotoHtml}
+            <div class="modal-body">
+                <h3>${p.nama}</h3>
+                <div class="modal-info">
+                    <p><strong>📍 Alamat:</strong> ${p.alamat}</p>
+                    <p><strong>💰 Limit Harga:</strong> ${formatRupiah(p.harga)}</p>
+                    <p><strong>💵 Uang Jaminan:</strong> ${formatRupiah(p.jaminan)}</p>
+                    <p><strong>📅 Batas Setor Jaminan:</strong> ${p.tglSetor}</p>
+                    <p><strong>⏰ Batas Akhir Penawaran:</strong> ${p.tglTutup}</p>
+                    <p><strong>📊 Status:</strong> <span style="color:green; font-weight:bold;">${p.status}</span></p>
+                </div>
+                <a href="${mapsUrl}" target="_blank" class="btn-detail" style="margin-top:10px; background:#1a5f7a;">📍 Lihat Lokasi di Maps</a>
+                ${p.wa ? `<a href="${waUrl}" target="_blank" class="modal-wa">📞 Hubungi Agen SJS via WhatsApp</a>` : ''}
+            </div>
+        `;
+        modal.style.display = 'block';
+    }
+    
+    // Close modal
+    document.querySelector('.modal-close').addEventListener('click', function() {
+        document.getElementById('detailModal').style.display = 'none';
+    });
+    window.onclick = function(event) {
+        const modal = document.getElementById('detailModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+    
+    // Event listeners filter
+    document.getElementById('searchInput').addEventListener('input', renderProperties);
+    document.getElementById('jenisUnitFilter').addEventListener('change', renderProperties);
+    document.getElementById('hargaMin').addEventListener('input', renderProperties);
+    document.getElementById('hargaMax').addEventListener('input', renderProperties);
+    document.getElementById('resetFilter').addEventListener('click', function() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('jenisUnitFilter').value = '';
+        document.getElementById('hargaMin').value = '';
+        document.getElementById('hargaMax').value = '';
+        renderProperties();
+    });
+    
+    // Load data
+    loadData();
+</script>
+</body>
+</html>
